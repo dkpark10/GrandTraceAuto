@@ -119,10 +119,12 @@ deep conv network이다. </br>
 </br>
 The loss network φ is used to deﬁne a feature reconstruction loss φfeat and a style reconstruction </br>
 loss φstyle that measure diﬀerences in content and style between images.  </br>
+
 > 손실함수 네트워크는 reconstruction loss와 인풋(content)과 style 의 차이를 측정하는</br>
 style reconstruction loss의 특징을 정의하는데 사용된다. </br>
 </br>
 for each input image 'x' we have a content target yc and a style target ys.</br>
+
 > 각 입력 인풋 'x'에 대해 content target(?) **yc**와 style target **ys** 가 있다. </br>
 
 for style transfer, the content target **yc** is the input image x and the output image **^y** shoud </br>
@@ -139,7 +141,35 @@ style reconstruction loss는 사용하지 않는다. </br>
 
 ## 3.1 image transformation network 
 
+~~img trans networn는 radford등 에서 정한 아기텍처 지침을 대략 따른다 ~~ ~~ </br>
 
+어떤 풀링 레이어를 사용하지 않고 대신 네트워크내 다운샘플 업샘플에 스트라이드 된 컨볼루션을 사용한다 </br>
+네트워크는 아키텍쳐를 사용하는 다섯개의 residual blocks로 구성된다. **먼말?????**</br>
+
+All non-residual convolutional layers are followed by spatial batch normalization [45] and ReLU </br>
+nonlinearities with the exception of the output layer, which instead uses a scaled tanh to ensure that </br>
+the output image has pixels in the range [0,255] </br>
+
+> 모든 **non res-net**(공부)는 output layer를 제외하고 spatial batch normalization 및 relu 비선형 </br>
+이 있으며 대신 tanh함수를 사용하여 output 이미지가 0 ~ 255 사이에 있는지 확인한다.</br>
+
+9x9 커널을 사용하는 처음 마지막 레이어를 제외하고 모든 컨볼루션 레이어는 3x3 커널을 사용한다. </br>
+
+#### input and output
+style transfer 의 경우 인풋 아웃풋 모두 3 * 256 * 256 컬러영상 </br>
+업샘플링 계수가 f인 초고해상도인 경우(????) **f는 대체 무엇이란 말인가........... **</br> 
+
+출력은 3 * 288 * 288 초고해상도 이고 인풋은 저 해상도 3 * 288/f * 288/f이다 </br>
+img transfer network는 풀리 컨볼루션이므로 어떤 해상도의 이미지에 적용될 수 있다. </br>
+
+### downsampling and upsampling
+
+업샘플링 계수가 f인 초고해상도인 경우(????) **f는 대체 무엇이란 말인가........... **</br> 
+
+여러 residual blocks를 사용한다. stride 1/2 컨볼루션 레이어를 log2 f를 </br>
+이건 네트워크에 통과하기 전 저해상도 이미지를 업샘플링 하기위한 바이큐빅 보간법을 사용하는것과 다르다. </br>
+고정된 업샘플링 func에 의존하지 않고 fractinally-strided 컨볼루션을 통해 업샘플링 기능은 나머지 네트워크와 </br>
+공동으로 학습된다. </br>
 
 
 
