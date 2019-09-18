@@ -4,7 +4,7 @@
 per loss 는 대략 인풋이미지에 반고흐 스타일을 입힌다면 인풋이미지와 반고흐 스타일에서의 지각적 차이(?) </br>
 어떤 semanic feature가 유지되기 위함임 </br>
 
-## 1.introduction
+## 1.Introduction
 
 이미지 처리에서의 예로는 디노이즈, 초해상도(해상도 복원), colorzation 이있는데, </br>
 여기서 인풋은 저하된 이미지(노이즈, 저해상도 또는 그레이스케일)이고 출력은 고품질 컬러 이미지다.</br>
@@ -50,7 +50,7 @@ percaptual loss 의 사용은 loss network에서 transformation network로 의�
 style tansfer를 위해 우리의 피드포워드 네트워크는 최적화(optimizer) 문제를 해결하기 위해 훈련된다. </br>
 대충 3배 빠름 ~~~ </br>
 
-## 2.related work
+## 2.Related work
 
 ### feed-forward image transformation
 최근 몇년동안 피드포워드 이미지 변환 작업은 다양하게 발전해왔다리 ~ </br>
@@ -72,10 +72,10 @@ depth 와 surface normal estimation을 위한 최근 방법들은 perpixel 회�
 
 피드포워드 모델은 그레이를 컬러로 변환하는 방법을 픽셀당 loss를 사용하여 학습된다. </br>
 
-#### perceptual optimization
+#### Perceptual Optimization
 **continue**
 
-#### style transfer
+#### Style Transfer
 
 ![styleransfer](https://user-images.githubusercontent.com/43857226/65004091-1da00b00-d936-11e9-8ece-62a4bbffc350.JPG)</br>
 > sf의 전반적인 개요도 인풋이미지를 변환하기 위해 img trans network을 학습한다. </br>
@@ -88,14 +88,14 @@ feature reconstruction loss를 공동으로 최소화함으로서 하나의 이�
 (코랩에 있는 예제 생각하면 댐)</br>
 유사한 방법이 있는데 오래 걸려서 우리는 피드포워드 네트워크를 훈련시켜 신속하게 한다~~ 이말임 </br>
 
-#### image super-resolution
+#### Image Super-Resolution
 
 이미지 초해상도란 고질적으로 문제다 ~ </br>
 초해상도 기법을 여러여러 방법으로 분류 </br>
 최근 픽셀당 유클리드 loss로 훈련된 3층 컨볼루션 신경망을 사용하여 이미지 초해상도에 </br>
 우수한 성능 달성 </br>
 
-## 3.method
+## 3.Method
 
 그림 2와 같이 두가지 요소로 구성된다. </br>
 여러 손실함수를 정의하는데 쓰이는 loss network 랑 img trnasfer network 이 두개로~~ </br>
@@ -139,7 +139,7 @@ ground-truth high resolution(실제 라운딩 박스 고해상도 이미지) 이
 style reconstruction loss는 사용하지 않는다. </br>
 하나의 네.트.워.크만 훈련한다. super resol당 (????) </br>
 
-## 3.1 image transformation network 
+## 3.1 Image Transformation Network 
 
 ~~img trans networn는 radford등 에서 정한 아기텍처 지침을 대략 따른다 ~~ ~~ </br>
 
@@ -155,14 +155,14 @@ the output image has pixels in the range [0,255] </br>
 
 **9x9 커널을 사용하는 처음 마지막 레이어를 제외하고 모든 컨볼루션 레이어는 3x3 커널을 사용한다. **</br>
 
-#### input and output
+#### Input and Output
 style transfer 의 경우 인풋 아웃풋 모두 3 * 256 * 256 컬러영상 </br>
 업샘플링 계수가 f인 초고해상도인 경우(????) **f는 대체 무엇이란 말인가........... **</br> 
 
 출력은 3 * 288 * 288 초고해상도 이고 인풋은 저 해상도 3 * 288/f * 288/f이다 </br>
 img transfer network는 풀리 컨볼루션이므로 어떤 해상도의 이미지에 적용될 수 있다. </br>
 
-### downsampling and upsampling
+#### Downsampling and Upsampling
 
 업샘플링 계수가 f인 초고해상도인 경우(????) **f는 대체 무엇이란 말인가........... **</br> 
 
@@ -174,11 +174,75 @@ img transfer network는 풀리 컨볼루션이므로 어떤 해상도의 이미�
 style transfer의 경우 인풋에 다운샘플하기 위해 2-스트라이드 컨볼루션을 사용한다. </br>
 input과 output은 동일 사이즈지만 업,다운 샘플링에 네트워크에 여러 이점이 많다. </br>
 </br>
-첫번째는 계산이다.
+첫번째는 계산이다
+C * H * W 크기의 인풋에 c필터를 포함한 3 * 3컨볼루션은 9HWC^2 multiple-add 연산이 필요한데. </br>
+DC * H/D * W/D 사이즈 인풋에서 DC필터와 3 * 3컨볼루션과 동일한 연산시간이다. </br>
+다운샘플링후 더 효과적으로 네트워크를 사용할 수 있다. </br>
+</br>
+두번째 이점은 효과적인 사이즈와 관련있다. </br>
+고품질 style transfer는 일관성 있는 방식으로 이미지의 큰 부분을 바꾸는걸 요구한다. </br>
+따라서 output의 각 픽셀이 input에서 효과적인 receptive field를 가지는것이 이점이다. </br>
+다운샘플링 없이 각각 추가적인 3 * 3 컨볼루션레이어는 효과적인 receptive field 사이즈를 </br>
+2만큼 증가한다. </br>
+D의 요소로 다운샘플링 후 각 3 * 3 컨볼루션은 효과적인 **receptive field** 사이즈를 2D만큼 증가 시킨 후</br>
+동일한 레이어 수로 더 큰 **receptive fields**를 제공한다. </br>
+
+![캡처](https://user-images.githubusercontent.com/43857226/65095860-d1b89900-d9fd-11e9-85dd-20d2c130960c.JPG)
+> 사전학습된 vgg-16 loss network로부터 여러개의 레이어 j에 대해 feature reconstruction loss를 최소화 하기 위한 </br>
+^y을 찾기위해 최적화를 사용한다. 높은 레이어에서 재구성함으로 영상내용과 전체적인 **spatial structure**는 </br>
+보존되지만 색상,텍스쳐,정확한 모양은 보존 되지 않음 </br> 
+
+#### Residual Connections
+
+이미지 분류를 위한 깊은 network를 학습하기 위해 residual connections를 사용한다. </br>
+residual network는 identify func를 위한 네트워크를 쉽게 해준다. </br>
+대부분의 경우 아웃풋과 인풋은 구조를 공유하기 때문에 img transfer에 좋은 특성이다. </br>
+따라서 네트워크 구조는 여려 residual blocks로 구성되어 있으며 각 블록은 두개의 3 * 3컨볼루션을</br>
+포함한다. </br>
+
+## 3.2 Perceptual Loss Function
+
+이미지들 사이의 하이레벨 perceptual과 semantic differ를 측정하는 구가지 perceptual loss를 정의한다. </br>
+이미지 분류를 위해 사전학습된 네트워크를 이용 즉 perceptual loss는 그 자체로 deep conv neural network이다. </br>
+실험에 쓰인건 imgaeNet 데이터 셋에서 학습된 16 - layer vgg network임 </br>
+
+![캡처](https://user-images.githubusercontent.com/43857226/65102547-60311880-da06-11e9-8247-f1a75c3d7f7d.JPG) </br>
+> 학습된 VGG - 16 loss network에서 스타일 재구성 loss func를 최소화하는 이미지 ^y을 찾기위해 최적화 사용 </br>
+이미지는 스타일의 특징을 보존하지만 공간구조는 보존하지 않음... 
+
+#### Feature Reconstruction Loss
+
+output ^y = fW(x)의 픽셀을 타겟이미지 y의 픽셀과 정확히 매치하는 것보단 loss network에 의해 </br>
+계산된 것과 유사한 특징묘사를 갖는것이 좋다. </br> 
+이미지 x를 처리할 때 φj(x)가 네트워크 φ의 j 번째 레이어의 활성화가 되도록 한다. </br>
+j가 컨볼루션 레이어일 때  φj(x)는 형상 Cj × Hj × Wj의 형상 맵이 된다. 
+
+![캡처](https://user-images.githubusercontent.com/43857226/65114170-bb700480-da20-11e9-9149-1f5d12725ac2.JPG) </br>
+feature reconstruction loss는 feature representations사이의 유클리드 거리(?????) 먼말임 ㅅㅂ </br>
+
+그림 3에서 재현한 것처럼 초기(?)레이어에 대해 feature reconstruction loss를 최소화 하는 ^y 이미지를 찾는 것은 </br>
+y와 시각적으로 구분되지 않는 이미지를 생산하는 경향이 있다. </br>
+
+상위 레이어에서 재구성 할 때 이미지와 전체적인 spatial structure는 보존되지만 색상,텍스쳐,정확하 모양은 보존 ㄴㄴ </br>
+img trnasfer networks를 학습시키기 위해 **feature reconstruction loss** 를 사용하는 것은 </br>
+출력이미지 ^y이 **대상이미지 y**와 지각적으로 유사하도록 권장되지만 </br>
+정확히 일치하도록 강제는 ㄴㄴ </br> 
+
+#### Style Reconstruction Loss
+
+feature reconstruction loss는 출력이미지 ^y가 타겟 y의 내용에서 벗어날 때(??) 불이익 안좋다 ~~ 이말 </br>
+또 다른 목표는 색,질감,패턴등 같은 스타일의 차이의 변화가 있어야 한다. </br>
+위같이 Cj * Hj * Wj의 피쳐맵인 인풋 x에 대해 네트워크의 j번째 레이어의 활성화가 되도록 한다.(?????)</br>
+gram matrix Gφ j(x)를 다음 공식과 같이 Cj * Cj 매트릭스로 정의한다.</br>
+
+![캡처](https://user-images.githubusercontent.com/43857226/65115446-cc217a00-da22-11e9-9eab-4879bac26982.JPG)</br>
+</br>
 
 
 
 
+## 용어정리
+**^y : 출력이미지**
 
 
 
