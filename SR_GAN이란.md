@@ -117,4 +117,40 @@ generative loss(ISR)은 정의된다 모든 트레이닝 샘플에 discriminator
 여기서 D(G(ILR))은 생성한 이미지 G(ILR)가 자연스런 이미지일경우 (ex: 0.5에 수렴) </br>
 더 나은 gradient 를 위해 **log[1 - D(G(ILR))]** 대신에 **-logD(G(ILR))** 을 최소화 한다. </br> 
 
+**주요점**
+1. loss func(perceptual loss)
+2. residual blocks and skip-connection
+3. maxpooling 대신 strides = 2 convnet 사용
+4. LeakyReul(alpha = 0.2)사용
+5. 학습된 VGGnet이용 featuremap 사이 유클리드 거리를 구함
+
+## Experiments
+#### 3.1 Data and similarity measures
+dataset Set5, Set14, BSD100을 데이터 셋으로 사용 </br>
+모든 실험은 저해상도와 고해상도사이에서 4배 스케일로 수행. </br>
+이는 이미지를 16배 감소한것. *(ex: 2 * 2 = 4 , 8 * 8 = 64, 64/4 = 16)* </br>
+그냥 데이터 이것저것 준비했다 ~~~ 이말임 </br>
+
+#### 3.2 Training details and parameters
+imageNet 데이터베이스에서 무작위로 350k 이미지를 사용하여 훈련 </br>
+LR img를 다운샘플링 계수 r = 4인 바이큐빅 커널을 사용하여 얻음. </br>
+미니 배치에 대해 96 * 96 HR 하위이미지 16개를 자른다. </br>
+generator model을 임의 크기로 변환할 수 있다. </br>
+LR은 0,1 사이 HR은 -1,1사이이다 ~ </br>
+따라서 MSE loss는 -1, 1 사이로 계산된다. </br>
+대충 러닝레이트 몇으로 하고 몇번 학습했다 ~~~ </br>
+G와 D를 k = 1로 동등하게 맞춤 
+G는 16개의 동일한 residual blocks를 사용 
+학습하는동안 batch normalazation을 off하여 input에만 의존하는 출력을 얻는다. </br>
+
+#### 3.3 Mean opinion score(MOS) testing
+**일단 패쓰으으으**
+
+#### 3.4 Investigation of content loss
+GAN에 기반한 perceptual loss에 다양한 content loss 차이점의 영향을 조사 
+특별히 
+
+
+
+
 
