@@ -81,11 +81,40 @@ D network는 방정식2의 maxmin문제를 해결하기 위해 학습된다. </b
 얻기 위해 마지막 시그모이드 활성화 함수가 뒤따른다(????) </br> 
 
 #### 2.2 Perceptual loss fucntion
+ISR은 네트워크 발전에 중요함. </br>
+일반적으로 ISR은 MSE에 기반하지만 지각적으로 관련있는 특성을 평가하는 손실함수를 </br>
+평가한다. </br>
+지각 함수는 content loss(ISRx)의 가중치함과 adversial loss func로 구성한다.</br>
 
+![캡처](https://user-images.githubusercontent.com/43857226/65402458-745f8600-de09-11e9-997e-e3367b63741b.JPG)
+</br>
 
+##### 2.2.1 Content loss
+픽셀기반 MSE loss는 다음과 같이 계산한다.</br>
+![캡처](https://user-images.githubusercontent.com/43857226/65402514-d1f3d280-de09-11e9-8d4b-ba32231019c2.JPG)
+</br>
+MSE는 SR에 많이 적용되는 방법이기는 하나 </br>
+높은 PSNR(주로 영상 또는 동영상 손실 압축에서 화질 손실 정보를 평가할 때 사용하는 것.) </br>
+에도 불구하고 MSE의 최적화문제는 지각적으로 사람이 보기에 만족스럽지 못한 </br>
+뭉개진 텍스처의 문제를 야기한다. </br>
+MSE대신 perceptual 유사성에 가까운 손실함수를 사용한다. </br>
+**미리 학습된 19계층 VGG network의 활성화 레이어 렐루를 기반으로 VGG loss를 정의한다.** </br>
+**φi, j를 사용하여 VGG19 네트워크 내에 i번째 maxpooling 계층 이전의 j번째 컨볼루션**</br>
+**(활성 후)으로 얻은 feature map을 나타냅니다.** </br>
+VGG loss를 reconstructed img(ILR)과 reference img(IMR)의 feature representations을
+유클리드 거리로 정의한다. </br>
+</br>
+![캡처](https://user-images.githubusercontent.com/43857226/65402905-4891cf80-de0c-11e9-8064-0bf268410f6d.JPG)
+</br>
+여기서 W,ij와 H,ij는 VGG network내의 각각의 피쳐맵의 차원을 나타낸다. </br>
 
+##### 2.2.2 Adversial loss
+네트워크가 discriminator를 속이기 위해 이미지의 다양한 특징에 있는 방법을 알도록 선호한다. </br>
+generative loss(ISR)은 정의된다 모든 트레이닝 샘플에 discriminator가 구별하는 것으로 </br>
 
-
-
+![캡처](https://user-images.githubusercontent.com/43857226/65403191-c4d8e280-de0d-11e9-8435-69c0a3c554f3.JPG)
+</br>
+여기서 D(G(ILR))은 생성한 이미지 G(ILR)가 자연스런 이미지일경우 (ex: 0.5에 수렴) </br>
+더 나은 gradient 를 위해 **log[1 - D(G(ILR))]** 대신에 **-logD(G(ILR))** 을 최소화 한다. </br> 
 
 
