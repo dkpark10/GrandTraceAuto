@@ -2,6 +2,13 @@
 ![캡처](https://user-images.githubusercontent.com/43857226/65736274-6796a700-e115-11e9-818e-c8c4d74ab6b8.PNG)
 </br>
 
+딥러닝의 기본 프로세스는 가설정의 -> 손실정의 -> 최적화정의로 이루어진다. </br>
+판별기는 입력 이미지가 진짜 이미지인지를 분류해 낸다. 이 분류는 적대 훈련 중에 일어날 것이다. </br>
+본질적으로, 판별기는 신경망의 순방향 전파가 이뤄지는 동안에 입력을 분류한다.</br>
+생성기는 임의의 벡터공간(잠재공간)에서 가져와 데이터를 생성. </br>
+</br>
+G와 D를 만들면 이를 합치는 적대모델도 만들어야 한다.</br>
+
 
 ```python
 import sys
@@ -28,7 +35,6 @@ class Trainer:
         self.BATCH = batch
         self.CHECKPOINT = checkpoint
         self.model_type = model_type
-
         self.LATENT_SPACE_SIZE = latent_size
 
         self.generator = Generator(height=self.H, width=self.W, channels=self.C, latent_size=self.LATENT_SPACE_SIZE)
@@ -42,21 +48,26 @@ class Trainer:
         if self.model_type not in allowed_types:
             print('ERROR: Only Integer Values from -1 to 9 are allowed')
 
-        (self.X_train, self.Y_train), (_, _) = mnist.load_data()
-        if self.model_type != -1:
+        (self.X_train, self.Y_train), (_, _) = mnist.load_data()          # X_train은 mnist 한장의 ndarray (60000,28,28)
+                                                                          # Y_train은 mnist 한장의 숫자 길이는 60000 (60000,)
+        
+        if self.model_type != -1:                                         # -1 아닐시 model_type숫자만 뽑는다 ~
             self.X_train = self.X_train[np.where(self.Y_train == int(self.model_type))[0]]
 
         # Rescale -1 to 1
         # Find Normalize Function from CV Class
-        self.X_train = (np.float32(self.X_train) - 127.5) / 127.5
+        self.X_train = (np.float32(self.X_train) - 127.5) / 127.5         # 0 ~ 255값을 0 ~ 1로 스케일링
         self.X_train = np.expand_dims(self.X_train, axis=3)
         return
 
     def train(self):
+    
         for e in range(self.EPOCHS):
+           
             # Train Discriminator
             # Make the training batch for this model be half real, half noise
             # Grab Real Images for this training batch
+          
             count_real_images = int(self.BATCH / 2)
             starting_index = randint(0, (len(self.X_train) - count_real_images))
             real_images_raw = self.X_train[starting_index: (starting_index + count_real_images)]
@@ -110,9 +121,10 @@ class Trainer:
 
 
 class GAN(object):                                                               # GAN은 g,d,loss로 구성된다.
+    
     def __init__(self, discriminator, generator):
+       
         self.OPTIMIZER = Adam(lr=0.0002, decay=8e-9)
-
         self.Generator = generator
 
         self.Discriminator = discriminator                                         
@@ -149,7 +161,8 @@ class Generator(object):                                                        
         self.latent_space = np.random.normal(0, 1, (self.LATENT_SPACE_SIZE,))
 
         self.Generator = self.model()
-        self.Generator.compile(loss='binary_crossentropy', optimizer=self.OPTIMIZER)
+        self.Generator.compile(loss='binary_crossentropy', optimizer=self.OPTIMIZER)  # GAN의 손실함수는 이진크로스엔트로피 사용
+                                                                                      # 최적화 기법은 아담옵티마이저
         self.save_model()
         self.summary()
 
@@ -167,7 +180,7 @@ class Generator(object):                                                        
             model.add(LeakyReLU(alpha=0.2))
             model.add(BatchNormalization(momentum=0.8))
 
-        model.add(Dense(self.W * self.H * self.C, activation='tanh'))
+        model.add(Dense(self.W * self.H * self.C, activation='tanh'))                   # 인풋과 아웃풋을 동일크기로 재구성후 모델반환
         model.add(Reshape((self.W, self.H, self.C)))
 
         return model
@@ -176,27 +189,32 @@ class Generator(object):                                                        
         return self.Generator.summary()
 
     def save_model(self):
-        plot_model(self.Generator.model, to_file='data/Generator_Model.png')
+        plot_model(self.Generator.model, to_file='data/Generator_Model.png')            # png이미지로 모델구조 저장
 
 
 class Discriminator(object):                                                        # 'D'는 간단한 이진선형분류기.
-    def __init__(self, width = 28, height= 28, channels = 1, latent_size=100):
+   
+   def __init__(self, width = 28, height= 28, channels = 1, latent_size=100):
+   
         self.CAPACITY = width*height*channels
         self.SHAPE = (width,height,channels)
         self.OPTIMIZER = Adam(lr=0.0002, decay=8e-9)
 
-
         self.Discriminator = self.model()
         self.Discriminator.compile(loss='binary_crossentropy', optimizer=self.OPTIMIZER, metrics=['accuracy'] )
+                                                                                      # gan의 기본예제이기 때문에 내장된 손실함수 사용
+                                                                                      # 여러 간모델에 따라 다양한 손실함수를 정의해야한다.
         self.save_model()
         self.summary()
 
     def model(self):                                                                  # 모델함수는 심층신경망을 만든다.
+    
         model = Sequential()
-        model.add(Flatten(input_shape=self.SHAPE))
-        model.add(Dense(self.CAPACITY, input_shape=self.SHAPE))
+        model.add(Flatten(input_shape=self.SHAPE))                                    # 이 계층은 데이터를 단일 스트림으로 전개
+        model.add(Dense(self.CAPACITY, input_shape=self.SHAPE))                       # dense 계층은 이전 계층과 완전히 연결된 계층
+                                                                                      # 입력이 각 뉴런에 도달할 수 있게 한다.
         model.add(LeakyReLU(alpha=0.2))
-        model.add(Dense(int(self.CAPACITY/2)))
+        model.add(Dense(int(self.CAPACITY/2)))                                        # 용량을 줄여 중요특징들을 학습하게 한다.
         model.add(LeakyReLU(alpha=0.2))
         model.add(Dense(1, activation='sigmoid'))
         return model
@@ -205,7 +223,7 @@ class Discriminator(object):                                                    
         return self.Discriminator.summary()
 
     def save_model(self):
-        plot_model(self.Discriminator.model, to_file='data/Discriminator_Model.png')
+        plot_model(self.Discriminator.model, to_file='data/Discriminator_Model.png')    # png이미지로 모델구조 저장
 
 
 if __name__ == '__main__':
