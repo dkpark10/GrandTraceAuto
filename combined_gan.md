@@ -1,3 +1,9 @@
+# gan 구조
+![캡처](https://user-images.githubusercontent.com/43857226/65736274-6796a700-e115-11e9-818e-c8c4d74ab6b8.PNG)
+</br>
+
+
+```python
 import sys
 from keras.datasets import mnist
 from random import randint
@@ -103,13 +109,13 @@ class Trainer:
         return
 
 
-class GAN(object):
+class GAN(object):                                                               # GAN은 g,d,loss로 구성된다.
     def __init__(self, discriminator, generator):
         self.OPTIMIZER = Adam(lr=0.0002, decay=8e-9)
 
         self.Generator = generator
 
-        self.Discriminator = discriminator
+        self.Discriminator = discriminator                                         
         self.Discriminator.trainable = False
 
         self.gan_model = self.model()
@@ -117,7 +123,7 @@ class GAN(object):
         self.save_model()
         self.summary()
 
-    def model(self):
+    def model(self):                                                            # model은 심층신경망을 만든다.
         model = Sequential()
         model.add(self.Generator)
         model.add(self.Discriminator)
@@ -130,7 +136,9 @@ class GAN(object):
         plot_model(self.gan_model.model, to_file='data/GAN_Model.png')
 
 
-class Generator(object):
+class Generator(object):                                                        # 'G'는 간단한 순차모델
+                                                                                # 순차모델이란 신경망에서 계층들을 순서대로 구성하고
+                                                                                # 연결하는 것.
     def __init__(self, width=28, height=28, channels=1, latent_size=100):
         self.W = width
         self.H = height
@@ -171,7 +179,7 @@ class Generator(object):
         plot_model(self.Generator.model, to_file='data/Generator_Model.png')
 
 
-class Discriminator(object):
+class Discriminator(object):                                                        # 'D'는 간단한 이진선형분류기.
     def __init__(self, width = 28, height= 28, channels = 1, latent_size=100):
         self.CAPACITY = width*height*channels
         self.SHAPE = (width,height,channels)
@@ -183,7 +191,7 @@ class Discriminator(object):
         self.save_model()
         self.summary()
 
-    def model(self):
+    def model(self):                                                                  # 모델함수는 심층신경망을 만든다.
         model = Sequential()
         model.add(Flatten(input_shape=self.SHAPE))
         model.add(Dense(self.CAPACITY, input_shape=self.SHAPE))
@@ -221,3 +229,4 @@ if __name__ == '__main__':
                       model_type=MODEL_TYPE)
 
     trainer.train()
+```
