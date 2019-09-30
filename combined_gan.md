@@ -49,7 +49,7 @@ class Trainer:
             print('ERROR: Only Integer Values from -1 to 9 are allowed')
 
         (self.X_train, self.Y_train), (_, _) = mnist.load_data()          # X_train은 mnist 한장의 ndarray (60000,28,28)
-                                                                          # Y_train은 mnist 한장의 숫자 길이는 60000 (60000,)
+                                                                          # Y_train은 mnist 한장의 숫자임 길이는 60000 (60000,)
         
         if self.model_type != -1:                                         # -1 아닐시 model_type숫자만 뽑는다 ~
             self.X_train = self.X_train[np.where(self.Y_train == int(self.model_type))[0]]
@@ -62,44 +62,51 @@ class Trainer:
 
     def train(self):
     
-        for e in range(self.EPOCHS):
+        for e in range(self.EPOCHS):                                                                # EPOCHS 반복횟수
            
             # Train Discriminator
             # Make the training batch for this model be half real, half noise
             # Grab Real Images for this training batch
-          
-            count_real_images = int(self.BATCH / 2)
-            starting_index = randint(0, (len(self.X_train) - count_real_images))
-            real_images_raw = self.X_train[starting_index: (starting_index + count_real_images)]
-            x_real_images = real_images_raw.reshape(count_real_images, self.W, self.H, self.C)
-            y_real_labels = np.ones([count_real_images, 1])
 
-            # Grab Generated Images for this training batch
-            latent_space_samples = self.sample_latent_space(count_real_images)
-            x_generated_images = self.generator.Generator.predict(latent_space_samples)
-            y_generated_labels = np.zeros([self.BATCH - count_real_images, 1])
+            # 훈련데이터셋에서 랜덤이미지로 구성된 배치 한개를 가져와 x_real_img, y_real_label 생성
+            count_real_images = int(self.BATCH / 2)                                                 # 16
+            starting_index = randint(0, (len(self.X_train) - count_real_images))                    # 0 ~ (60000-16)
+            real_images_raw = self.X_train[starting_index: (starting_index + count_real_images)]    # 16단위로 슬라이스
+            x_real_images = real_images_raw.reshape(count_real_images, self.W, self.H, self.C)      # (16,28,28,1)
+            y_real_labels = np.ones([count_real_images, 1])                                         # 1로 이루어진 (16,1)행렬
 
-            # Combine to train on the discriminator
-            x_batch = np.concatenate([x_real_images, x_generated_images])
-            y_batch = np.concatenate([y_real_labels, y_generated_labels])
+            # Grab Generated Images for this training batch                                         # 임의공간에서 G 추출
+            latent_space_samples = self.sample_latent_space(count_real_images)                      # 평균 0 표준편차1인 (16,100)행렬
+            x_generated_images = self.generator.Generator.predict(latent_space_samples)             # 모델의 사용 (??)
+            y_generated_labels = np.zeros([self.BATCH - count_real_images, 1])                      # 0으로 이루어진 (16,1)행렬
 
-            # Now, train the discriminator with this batch
-            discriminator_loss = self.discriminator.Discriminator.train_on_batch(x_batch, y_batch)[0]
+            # Discriminator에서 훈련용으로 결합한다. 
+            x_batch = np.concatenate([x_real_images, x_generated_images])                           # x_real과 x_gene 합침
+            y_batch = np.concatenate([y_real_labels, y_generated_labels])                           # y_rabel과 y_gene_label 합침
+                
+            # 판별기를 훈련 하고 있다. 훈련될 때 이미지가 가짜라는걸 알고 있으므로 판별기는
+            # 생성된 이미지와 진짜사이 결함을 찾으려 한다.
+
+
+            # Now, train the discriminator with this batch                                          # discriminator 학습
+            discriminator_loss = self.discriminator.Discriminator.train_on_batch(x_batch, y_batch)[0] 
+            
+
 
             # Generate Noise
-            x_latent_space_samples = self.sample_latent_space(self.BATCH)
-            y_generated_labels = np.ones([self.BATCH, 1])
-            generator_loss = self.gan.gan_model.train_on_batch(x_latent_space_samples, y_generated_labels)
+            x_latent_space_samples = self.sample_latent_space(self.BATCH)                           # (32,100)행렬 무작위 표본 추출
+            y_generated_labels = np.ones([self.BATCH, 1])                                           # 1로이루어진 (16,1)행렬
+            generator_loss = self.gan.gan_model.train_on_batch(x_latent_space_samples, y_generated_labels) 
 
             print('Epoch: ' + str(int(e)) + ', [Discriminator :: Loss: ' + str(
                 discriminator_loss) + '], [ Generator :: Loss: ' + str(generator_loss) + ']')
 
-            if e % self.CHECKPOINT == 0:
+            if e % self.CHECKPOINT == 0:                                                            # 50번마다 모델 저장
                 self.plot_checkpoint(e)
         return
 
     def sample_latent_space(self, instances):
-        return np.random.normal(0, 1, (instances, self.LATENT_SPACE_SIZE))
+        return np.random.normal(0, 1, (instances, self.LATENT_SPACE_SIZE))                 # 0에 가깝고 표준편차가 1인 (16,100)행렬
 
     def plot_checkpoint(self, e):
         filename = "data/sample_" + str(e) + ".png"
