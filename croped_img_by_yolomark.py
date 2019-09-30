@@ -21,13 +21,16 @@ def Quardrisect(img):
     sliced_list = []
     height, width = result.shape[:2]
 
-    num1 = result[int(height * 0.12): int(height * 0.8872), int(width * 0.484): int(width * 0.5923)]
+    four = int(width/4)
+    temp = 0
+    
+    num1 = result[int(0): int(height), int(0): int(temp + four)]; temp += four
     sliced_list.append(num1)
-    num2 = result[int(height * 0.12): int(height * 0.8872), int(width * 0.5923): int(width * 0.7)]
+    num2 = result[int(0): int(height), int(temp): int(temp + four)]; temp += four
     sliced_list.append(num2)
-    num3 = result[int(height * 0.12): int(height * 0.8872), int(width * 0.7): int(width * 0.807)]
+    num3 = result[int(0): int(height), int(temp): int(temp + four)]; temp += four
     sliced_list.append(num3)
-    num4 = result[int(height * 0.12): int(height * 0.8872), int(width * 0.807): int(width * 0.915)]
+    num4 = result[int(0): int(height), int(temp): int(width)]
     sliced_list.append(num4)
 
     return sliced_list
@@ -65,10 +68,16 @@ def Img_Slice(img, txt):
 
 def Create_Folder():
 
-    foldername = "/home/bit/croped_img_by_yolo"
+    foldername = "/home/bit/final_cp_dataset_zerotinine"
+    numberingfold = foldername + "/" + "dataset"
     if not os.path.isdir(foldername):
         os.mkdir(foldername)
 
+    for i in range(10):
+        fold = numberingfold + "_" + str(i)
+        if not os.path.idsir(fold):
+            os.mkdir(fold)
+        
     return foldername
 
 
@@ -79,7 +88,8 @@ if __name__ == '__main__':
     basepath = "/home/bit/Yolo_mark/x64/Release/data/testfolder"            # <-- edit folder
     filelist = os.listdir(basepath)
     txtlist = []
-
+    savenum = [1 for i in range(10)]
+    
     foldername = Create_Folder()
 
     for file in filelist:
@@ -89,6 +99,7 @@ if __name__ == '__main__':
 
     for idx,file in enumerate(txtlist):
 
+        numbering = file[:4]
         temp = file[:-4]
         temp = basepath + "/" + temp + ".png"
         img = cv2.imread(temp, cv2.IMREAD_COLOR)
@@ -97,7 +108,11 @@ if __name__ == '__main__':
         ret = Img_Slice(img, txt)
         quard_list = Quardrisect(ret)
 
-        for cpnum in range(len(quard_list)):
-            savetitle = foldername + "/" + "croped_img" + str(idx + 1) + "_" + str(cpnum + 1) + ".png"
+        for j in range(len(quard_list)):
+            
+            savetitle = foldername + "/" + "dataset_" + numbering[j] + "/" \
+            numbering[j] + "_" + str(savenum[int(numbering[j])]) + ".png"    
+            
+            savenum[int(numbering[j])] += 1
             cv2.imwrite(savetitle, quard_list[cpnum], [cv2.IMWRITE_PNG_COMPRESSION, 0])
 
