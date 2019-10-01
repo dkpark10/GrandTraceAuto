@@ -31,25 +31,32 @@ Dense layer는 입출력을 모두 연결 입력이 4 출력이 8이라면 가�
 덴스레이어는 입력수에 상관없이 출력을 자유롭게 설정할 수 있다. </br>
 `Dense(1, input_shape = 3, acti = 'sigmoid)`
 </br>
-이를 그림으로 표현해보자
+이를 그림으로 표현해보자 </br>
+
 ![캡처](https://user-images.githubusercontent.com/43857226/65928380-b2c3f900-e438-11e9-83e9-bf6414abc042.PNG)
 </br> 
+
 다중 클래스 분류문제에서 클래스 수만큼 출력이 필요하다. 만약 3가지로 분류된다면 아래코드처럼</br>
 출력이 3개이고 계산값을 각 클래스의 확률개념으로 표현할 수 있는 softmax를 사용 </br>
 `Dense(3, input_shape = 3, acti = 'softmax')`
+
 </br>
 ![캡처](https://user-images.githubusercontent.com/43857226/65934098-11946d00-e44f-11e9-83bb-dbf084819ba7.PNG)
 </br>
+
 입력은 4개이며 출력은 3개이므로 시냅스 개수(곱한것)은 12개이다. </br>
 Dense layer는 히든레이어 및 인풋레이어로 많이 쓰인다. </br>
 이럴떄 보통 **relu**를 사용 </br>
 `Dense(4, input_shape = 6, acti = 'relu')`
 </br>
 이를 표시하면 다음과 같다. </br>
+
 ![캡처](https://user-images.githubusercontent.com/43857226/65934380-1b6aa000-e450-11e9-84f1-0f315a6a3237.PNG)
 </br>
+
 인풋레이어가 아닐시 이전층의 출력수를 알 수 있기 때문에 input_shape를 지정하지 않아도 된다. </br>
 다음 코드는 인풋에만 input_shape를 지정하고 이후 지정하지 않는다. </br>
+
 </br>
 `
 model.add(Dense(8, input_dim=4, init='uniform', activation='relu'))
@@ -57,8 +64,10 @@ model.add(Dense(6, init='uniform', activation='relu'))
 model.add(Dense(1, init='uniform', activation='sigmoid'))
 `
 이 코드를 표시하면 다음 아래 그림과 같다. </br>
+
 ![캡처](https://user-images.githubusercontent.com/43857226/65934467-8d42e980-e450-11e9-8474-f270704f3309.PNG)
 </br>
+
 다음구조는 입력이 4이고 출력이 0 ~ 1 사이를 나오는 모델임을 알 수 있다.</br>
 쌓았던 블록을 실제로 구현해보장 </br> 
 
@@ -71,6 +80,3 @@ model.add(Dense(8, input_shape = 4, init = 'uniform', activation = 'relu'))
 model.add(Dense(6, init = 'uniform', activation = 'relu'))
 model.add(Dense(1, init = 'uniform', activation = 'sigmoid'))
 ```
-
-
-
