@@ -8,6 +8,7 @@ w0x0 + w1x1 + w2*x2 : 입력되는 신호의 양과 해당 신호의 시냅스 �
 f : 최종 합계가 다른 뉴런에게 전달되는 신호의 양을 결정짓는 규칙, 활성화 함수</br>
 
 # Dense layer
+
 Dense layer는 입출력을 모두 연결 입력이 4 출력이 8이라면 가중치는 32개 </br>
 > 가중치가 높을수록 해당 입력 뉴런이 출력 뉴런에 미치는 영향이 크고 낮을수록 적다. </br>
 </br>
@@ -58,11 +59,12 @@ Dense layer는 히든레이어 및 인풋레이어로 많이 쓰인다. </br>
 다음 코드는 인풋에만 input_shape를 지정하고 이후 지정하지 않는다. </br>
 
 </br>
-`
+```python
 model.add(Dense(8, input_dim=4, init='uniform', activation='relu'))
 model.add(Dense(6, init='uniform', activation='relu'))
 model.add(Dense(1, init='uniform', activation='sigmoid'))
-`
+```
+
 이 코드를 표시하면 다음 아래 그림과 같다. </br>
 
 ![캡처](https://user-images.githubusercontent.com/43857226/65934467-8d42e980-e450-11e9-8474-f270704f3309.PNG)
