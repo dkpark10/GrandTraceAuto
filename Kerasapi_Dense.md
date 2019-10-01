@@ -40,9 +40,9 @@ Dense layer는 입출력을 모두 연결 입력이 4 출력이 8이라면 가�
 다중 클래스 분류문제에서 클래스 수만큼 출력이 필요하다. 만약 3가지로 분류된다면 아래코드처럼</br>
 출력이 3개이고 계산값을 각 클래스의 확률개념으로 표현할 수 있는 softmax를 사용 </br>
 `Dense(3, input_shape = 3, acti = 'softmax')`
-
 </br>
-![캡처](https://user-images.githubusercontent.com/43857226/65934098-11946d00-e44f-11e9-83bb-dbf084819ba7.PNG)
+
+![캡처](https://user-images.githubusercontent.com/43857226/65935608-9cc43180-e454-11e9-961d-b83dcbf4bfd0.PNG)
 </br>
 
 입력은 4개이며 출력은 3개이므로 시냅스 개수(곱한것)은 12개이다. </br>
