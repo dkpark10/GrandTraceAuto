@@ -177,8 +177,8 @@ class Generator(object):                                                        
         model = Sequential()
 
         block_size = block_starting_size
-        model.add(Dense(block_size, input_shape=(self.LATENT_SPACE_SIZE,)))
-        model.add(LeakyReLU(alpha=0.2))
+        model.add(Dense(block_size, input_shape=(self.LATENT_SPACE_SIZE,)))          # 입력은 100 출력은 128인 깊은 레이어
+        model.add(LeakyReLU(alpha=0.2))                                              # Leaky relu 사용
         model.add(BatchNormalization(momentum=0.8))
 
         for i in range(num_blocks - 1):
