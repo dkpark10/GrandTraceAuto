@@ -19,12 +19,16 @@ Conv2D(32, (5, 5), padding='valid', input_shape=(28, 28, 1), activation='relu')
 </br>
 인풋 이미지는 채널 수가 1, 가로 3 픽셀, 세로가 3 픽셀이고, </br>
 크기가 2 x 2인 필터가 하나인 경우를 레이어로 표시하면 다음과 같다. </br>
+
 ```python
 Conv2D(1, (2, 2), padding = 'valid', input_shape = (3, 3, 1))
 ```
 </br>
+
 ![캡처](https://user-images.githubusercontent.com/43857226/67059659-e9b64080-f194-11e9-9553-efb48ada5e37.JPG)
+
 </br>
+
 필터는 가중치를 의미한다. 하나의 필터가 입력 이미지를 돌면서 적용된 값을 모으면 출력 이미지가 생성된다.</br> 
 여기에는 두 가지 특성이 있습니다.</br>
 하나의 필터로 입력 이미지를 순회하기 때문에 순회할 때 적용되는 가중치는 모두 동일하다. </br>
