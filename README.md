@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Generative Adversarial Networks Cookbook
 
 <a href="https://www.packtpub.com/big-data-and-business-intelligence/generative-adversarial-networks-cookbook?utm_source=github&utm_medium=repository&utm_campaign=9781789139907 "><img src="https://d1ldz4te4covpm.cloudfront.net/sites/default/files/imagecache/ppv4_main_book_cover/9781789139907.png" alt="Generative Adversarial Networks Cookbook" height="256px" align="right"></a>
@@ -59,3 +60,6 @@ We also provide a PDF file that has color images of the screenshots/diagrams use
 [Click here](https://docs.google.com/forms/d/e/1FAIpQLSdy7dATC6QmEL81FIUuymZ0Wy9vH1jHkvpY57OiMeKGqib_Ow/viewform) if you have any feedback or suggestions.
 
 
+=======
+# GrandTraceAuto
+>>>>>>> 84daa26046d0b5fa52290fd3d867066aea91ea20
